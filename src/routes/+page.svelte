@@ -24,7 +24,8 @@
 
   // Initialize both x and y with default values
   let position = Point.create(containerWidth / 2, containerHeight / 2);
-  let speed = Vector.create(200, 200);
+  let direction = Vector.create(1, 1);
+  const speed = 200;
 
   let gameWon = false;
   let heroText = "MARY CHOI";
@@ -76,17 +77,20 @@
 
     const deltaSeconds = delta / 1000;
 
-    position = Point.applyVector(Vector.scale(deltaSeconds, speed), position);
+    position = Point.applyVector(
+      Vector.scale(deltaSeconds * speed, Vector.normalize(direction)),
+      position
+    );
 
     if (position.x <= 0 || position.x + imageWidth >= containerWidth) {
-      speed = Vector.invertX(speed);
+      direction = Vector.invertX(direction);
       position = Point.create(
         position.x <= 0 ? 0 : containerWidth - imageWidth,
         position.y
       );
     }
     if (position.y <= 0 || position.y + imageHeight >= containerHeight) {
-      speed = Vector.invertY(speed);
+      direction = Vector.invertY(direction);
       position = Point.create(
         position.x,
         position.y <= 0 ? 0 : containerHeight - imageHeight

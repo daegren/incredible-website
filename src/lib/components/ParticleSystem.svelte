@@ -13,7 +13,8 @@
   interface Particle {
     position: Point.Point;
     size: number;
-    speed: Vector.Vector;
+    direction: Vector.Vector;
+    speed: number;
     opacity: number;
     rotation: number;
     rotationSpeed: number;
@@ -51,10 +52,8 @@
     return {
       position: Point.create(x, y),
       size,
-      speed: Vector.create(
-        (Math.random() - 0.5) * 250,
-        (Math.random() - 0.5) * 250
-      ),
+      speed: 250,
+      direction: Vector.create(Math.random() - 0.5, Math.random() - 0.5),
       opacity: Math.random() * 0.5 + 0.5,
       rotation: Math.random() * 360,
       rotationSpeed: (Math.random() - 0.5) * 5,
@@ -82,7 +81,7 @@
       }
 
       particle.position = Point.applyVector(
-        Vector.scale(deltaSeconds, particle.speed),
+        Vector.scale(deltaSeconds * particle.speed, Vector.normalize(particle.direction)),
         particle.position
       );
 
@@ -90,7 +89,7 @@
         particle.position.x < 0 ||
         particle.position.x + particle.size > containerWidth
       ) {
-        particle.speed = Vector.invertX(particle.speed);
+        particle.direction = Vector.invertX(particle.direction);
         particle.position = Point.create(
           particle.position.x < 0 ? 0 : containerWidth - particle.size,
           particle.position.y
@@ -100,7 +99,7 @@
         particle.position.y < 0 ||
         particle.position.y + particle.size > containerHeight
       ) {
-        particle.speed = Vector.invertY(particle.speed);
+        particle.direction = Vector.invertY(particle.direction);
         particle.position = Point.create(
           particle.position.x,
           particle.position.y < 0 ? 0 : containerHeight - particle.size

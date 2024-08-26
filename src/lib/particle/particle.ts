@@ -4,7 +4,8 @@ import * as Vector from "$lib/vector";
 export interface Particle {
   position: Point.Point;
   size: number;
-  speed: Vector.Vector;
+  direction: Vector.Vector;
+  speed: number;
   opacity: number;
   rotation: number;
   rotationSpeed: number;
@@ -20,7 +21,8 @@ export function createParticle(containerWidth: number, containerHeight: number):
   return {
     position: Point.create(x, y),
     size,
-    speed: Vector.create((Math.random() - 0.5) * 250, (Math.random() - 0.5) * 250),
+    speed: 250,
+    direction: Vector.create(Math.random() - 0.5, Math.random() - 0.5),
     opacity: Math.random() * 0.5 + 0.5,
     rotation: Math.random() * 360,
     rotationSpeed: (Math.random() - 0.5) * 5,
@@ -33,16 +35,16 @@ export function createParticle(containerWidth: number, containerHeight: number):
 export function updateParticle(particle: Particle, deltaSeconds: number, containerWidth: number, containerHeight: number): Particle {
   if (particle.isStatic) return particle;
 
-  let { position, speed, rotation, rotationSpeed } = particle;
+  let { position, speed, direction, rotation, rotationSpeed } = particle;
 
-  position = Point.applyVector(Vector.scale(deltaSeconds, speed), position);
+  position = Point.applyVector(Vector.scale(deltaSeconds * speed, Vector.normalize(direction)), position);
 
   if (position.x < 0 || (position.x + particle.size) > containerWidth) {
-    speed = Vector.invertX(speed);
+    direction = Vector.invertX(direction);
     position = Point.create(position.x < 0 ? 0 : containerWidth - particle.size, position.y);
   }
   if (position.y < 0 || (position.y + particle.size) > containerHeight) {
-    speed = Vector.invertY(speed);
+    direction = Vector.invertY(direction);
     position = Point.create(position.x, position.y < 0 ? 0 : containerHeight - particle.size);
   }
 
